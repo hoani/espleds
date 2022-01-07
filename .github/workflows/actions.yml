@@ -25,13 +25,6 @@ jobs:
           - ./
         fqbn: "esp32:esp32:esp32"
         enable-deltas-report: true
-        libraries: |
-          - name: "Adafruit NeoPixel"
-            source-url: https://github.com/adafruit/Adafruit_NeoPixel.git
-            version: 1.10.0
-          - name: "Arduino JSON"
-            source-url: https://github.com/bblanchon/ArduinoJson.git
-            version: 1.10.0
     - uses: actions/upload-artifact@v2
       with:
         name: sketches-reports
