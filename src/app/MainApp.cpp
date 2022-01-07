@@ -7,7 +7,9 @@
 //
 
 
-#include "../3rdParty/Adafruit_NeoPixel/Adafruit_NeoPixel.h"
+#include "../ledStrip/ledStrip.h"
+#include "../ledStrip/adafruitLEDStrip/adafruitLEDStrip.h"
+
 #include "../3rdParty/ArduinoJson/ArduinoJson.h"
 #include <WiFi.h>
 #include "../jsonBuffer/jsonBuffer.h"
@@ -22,16 +24,19 @@
 #define NUMPIXELS 120
 #define MAXPIXELS 5
 
-Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
+static Adafruit_NeoPixel adafruitPixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
+LEDStrip *pixels = new AdafruitLEDStrip(adafruitPixels);
+
+
 
 #define DELAYVAL 10 // Time (in milliseconds) to pause between pixels
 
-const uint32_t colorAqua = pixels.Color(50, 150, 150);
-const uint32_t colorRed = pixels.Color(250, 30, 30);
-const uint32_t colorIndigo = pixels.Color(20, 5, 60);
-const uint32_t colorNone = 0;
+const Color colorAqua = Color(50, 150, 150);
+const Color colorRed = Color(250, 30, 30);
+const Color colorIndigo = Color(20, 5, 60);
+const Color colorNone = Color(0, 0, 0);
 
-static uint32_t onColor = colorAqua;
+static Color onColor = colorAqua;
 
 void handleWifi();
 void pixelsUpdate(int i);
@@ -42,20 +47,20 @@ WiFiServer server(8080);
 
 void MainApp::setup() {
   delay(500);
-  pixels.begin(); 
+  adafruitPixels.begin(); 
   Serial.begin(115200);
   Serial.println();
 
   wifiConnect();
 
-  pixels.clear(); // Set all pixel colors to 'off'
+  pixels->clear(); // Set all pixel colors to 'off'
   int i = 0;
   
   while(true) {
     handleWifi();
     delay(DELAYVAL);
     pixelsUpdate(i);
-    pixels.show();
+    pixels->show();
     i = (i + 1) % (NUMPIXELS + MAXPIXELS);
   }
 }
@@ -63,9 +68,8 @@ void MainApp::setup() {
 void MainApp::loop() {}
 
 void handleWifi() {
-  static String incoming;
   static WiFiClient c;
-  static JSONBuffer b;
+  static JSONBuffer<256> b;
   if (!c) {
     c = server.available();
     if (c) {
@@ -78,20 +82,24 @@ void handleWifi() {
     if (c.available()) {
       
       while (c.available()) {
-        char b = c.read();
-        if (b == '\n') {
-          Serial.println("Received `" + incoming +"`");
-          if (incoming == String("red")) {
-            onColor = colorRed;
-          } else if (incoming == String("aqua")) {
-            onColor = colorAqua;
-          } else if (incoming == String("off")) {
-            onColor = colorNone;
+        b.update(c);
+        if (b.done()) {
+          String s = b.getString();
+          Serial.println("Received `" + s +"`");
+          DynamicJsonDocument doc(1024);
+          deserializeJson(doc, s);
+          if (doc.containsKey("color")) {
+            const char* color = doc["color"];
+            if (String(color) == "red") {
+              onColor = colorRed;
+            } else if (String(color) == "aqua") {
+              onColor = colorAqua;
+            } else if (String(color) == "off") {
+              onColor = colorNone;
+            }
           }
-          incoming = String();
-          break;
         }
-        incoming += b;
+        b = JSONBuffer<256>();
       }
     }
   }
@@ -101,10 +109,10 @@ void pixelsUpdate(int i) {
   int lowPixel = i - MAXPIXELS;
   
   if (i < NUMPIXELS) {
-    pixels.setPixelColor(i, onColor);
+    pixels->set(i, onColor);
   } 
   if (lowPixel >= 0) {
-    pixels.setPixelColor(lowPixel, colorIndigo);
+    pixels->set(lowPixel, colorIndigo);
   }
 }
 
