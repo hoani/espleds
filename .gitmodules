@@ -1,6 +1,1 @@
-[submodule "src/3rdParty/Adafruit_NeoPixel"]
-	path = src/3rdParty/Adafruit_NeoPixel
-	url = https://github.com/adafruit/Adafruit_NeoPixel.git
-[submodule "src/3rdParty/ArduinoJson"]
-	path = src/3rdParty/ArduinoJson
-	url = https://github.com/bblanchon/ArduinoJson.git
+
