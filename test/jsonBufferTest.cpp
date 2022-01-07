@@ -1,6 +1,4 @@
 //
-// Scheduler Tests
-//
 // Hoani Bryson (github.com/hoani)
 // Copyright (c) 2022 Hoani Bryson
 // License - MIT

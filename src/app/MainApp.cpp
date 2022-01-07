@@ -7,8 +7,8 @@
 //
 
 
-#include "../ledStrip/ledStrip.h"
-#include "../ledStrip/adafruitLEDStrip/adafruitLEDStrip.h"
+#include "../led/strip.h"
+#include "../led/adafruitLEDStrip/adafruitLEDStrip.h"
 
 #include "../3rdParty/ArduinoJson/ArduinoJson.h"
 #include <WiFi.h>

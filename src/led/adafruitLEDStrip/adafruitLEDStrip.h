@@ -13,7 +13,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "../ledStrip.h"
+#include "../strip.h"
 #include "../../3rdParty/Adafruit_NeoPixel/Adafruit_NeoPixel.h"
 
 
@@ -32,6 +32,10 @@ public:
     }
     void clear() {
         _strip.clear();
+    }
+
+    int length() {
+        static_cast<uint16_t>(_strip.numPixels());
     }
 
 private:
