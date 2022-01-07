@@ -8,7 +8,9 @@
 
 
 #include "../3rdParty/Adafruit_NeoPixel/Adafruit_NeoPixel.h"
+#include "../3rdParty/ArduinoJson/ArduinoJson.h"
 #include <WiFi.h>
+#include "../jsonBuffer/jsonBuffer.h"
 #include "MainApp.h"
 
 // Which pin on the Arduino is connected to the NeoPixels?
@@ -63,6 +65,7 @@ void MainApp::loop() {}
 void handleWifi() {
   static String incoming;
   static WiFiClient c;
+  static JSONBuffer b;
   if (!c) {
     c = server.available();
     if (c) {
